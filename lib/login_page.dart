@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:weight_tracking/SQLite/database_helper.dart';
 import 'package:weight_tracking/home_page.dart';
 import 'package:weight_tracking/signup_page.dart';
 
-
 class LoginPage extends StatelessWidget {
+  final dbHelper = DatabaseHelper.instance; // DatabaseHelper nesnesini oluştur
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,21 +16,26 @@ class LoginPage extends StatelessWidget {
           fontSize: 20.0,
           color: Color.fromARGB(255, 73, 111, 160),
         ),
-        centerTitle: true, 
+        centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
-          color: Color.fromARGB(255, 73, 111, 160), // We can change the color of the arrow from here
+          color: Color.fromARGB(255, 73, 111,
+              160), // We can change the color of the arrow from here
         ),
       ),
       backgroundColor: const Color.fromARGB(255, 142, 185, 205),
-      body: LoginForm(),
+      body: LoginForm(dbHelper: dbHelper),
     );
   }
 }
+
 class LoginForm extends StatefulWidget {
+  final DatabaseHelper dbHelper;
+
+  LoginForm({required this.dbHelper});
   @override
   _LoginFormState createState() => _LoginFormState();
 }
@@ -52,19 +58,19 @@ class _LoginFormState extends State<LoginForm> {
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(labelText: 'Email',
-                    labelStyle:
-                        TextStyle(color: Color.fromARGB(255, 67, 67, 67)),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(255, 73, 111, 160),
-                      ),
-                    ),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
+              decoration: InputDecoration(
+                labelText: 'Email',
+                labelStyle: TextStyle(color: Color.fromARGB(255, 67, 67, 67)),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color.fromARGB(255, 73, 111, 160),
                   ),
-                  cursorColor: Color.fromARGB(255, 73, 111, 160),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+              ),
+              cursorColor: Color.fromARGB(255, 73, 111, 160),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your email';
@@ -76,19 +82,19 @@ class _LoginFormState extends State<LoginForm> {
             TextFormField(
               controller: _passwordController,
               obscureText: true,
-              decoration: InputDecoration(labelText: 'Password',
-                    labelStyle:
-                        TextStyle(color: Color.fromARGB(255, 67, 67, 67)),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(255, 73, 111, 160),
-                      ),
-                    ),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
+              decoration: InputDecoration(
+                labelText: 'Password',
+                labelStyle: TextStyle(color: Color.fromARGB(255, 67, 67, 67)),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color.fromARGB(255, 73, 111, 160),
                   ),
-                  cursorColor: Color.fromARGB(255, 73, 111, 160),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+              ),
+              cursorColor: Color.fromARGB(255, 73, 111, 160),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your password';
@@ -104,16 +110,17 @@ class _LoginFormState extends State<LoginForm> {
                   String email = _emailController.text;
                   String password = _passwordController.text;
                   print('Loging in with email: $email, password: $password');
-                   Navigator.push(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => HomePage()),
                   );
                 }
               },
               style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 73, 111, 160), // Change the color of the "Login" button
-                    foregroundColor: Colors.white,
-                  ),
+                backgroundColor: Color.fromARGB(255, 73, 111,
+                    160), // Change the color of the "Login" button
+                foregroundColor: Colors.white,
+              ),
               child: Text('Log in'),
             ),
             SizedBox(height: 16.0),
@@ -125,11 +132,14 @@ class _LoginFormState extends State<LoginForm> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SignUpPage()),
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              SignUpPage(dbHelper: widget.dbHelper)),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 73, 111, 160), // Change the color of the "Login" button
+                    backgroundColor: Color.fromARGB(255, 73, 111,
+                        160), // Change the color of the "Login" button
                     foregroundColor: Colors.white,
                   ),
                   child: Text('Sign Up'),

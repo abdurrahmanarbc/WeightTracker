@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "422710077825",
+    "firebase_url": "https://weighttracking-3d4e1-default-rtdb.firebaseio.com",
+    "project_id": "weighttracking-3d4e1",
+    "storage_bucket": "weighttracking-3d4e1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:422710077825:android:409121ca58d39511642080",
+        "android_client_info": {
+          "package_name": "com.example.weight_tracking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRuwj2X2JAZEhPLMeVMUjyG2QaPTS_Aj4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

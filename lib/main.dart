@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:weight_tracking/SQLite/database_helper.dart';
-import 'package:weight_tracking/home_page.dart';
 import 'package:weight_tracking/login_page.dart';
 import 'package:weight_tracking/signup_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized(); // Necessary for running asynchronous code
-
-  // Establish the database connection at the beginning of the application
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  WidgetsFlutterBinding.ensureInitialized();
+  final String fileName =
+      'your_database.db'; // Veritabanı dosya adını buraya ekleyin
   DatabaseHelper dbHelper = DatabaseHelper.instance;
-  
-  dbHelper.initializeDatabase().then((_) {
+
+  dbHelper.initializeDatabase(fileName).then((_) {
     print('Database connection established');
     runApp(MyApp());
   }).catchError((error) {
@@ -19,14 +24,15 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  final DatabaseHelper dbHelper = DatabaseHelper.instance;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: MainPage(),
       routes: {
-        '/login': (context) => LoginPage(), 
-        '/home': (context) => HomePage(), // Application screen route
-        '/signup': (context) => SignUpPage(), // Route of the sign up screen
+        '/login': (context) => LoginPage(),
+        '/signup': (context) => SignUpPage(dbHelper: dbHelper),
       },
     );
   }
@@ -39,19 +45,12 @@ class MainPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Weight Tracking App'),
         backgroundColor: Color.fromRGBO(249, 248, 242, 1),
-titleTextStyle: TextStyle(
+        titleTextStyle: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 20.0,
           color: Color.fromARGB(255, 110, 194, 111),
         ),
-        centerTitle: true, 
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          color: Color.fromARGB(255, 110, 194, 111), 
-      ),
+        centerTitle: true,
       ),
       backgroundColor: Color.fromARGB(255, 186, 205, 182),
       body: Center(
@@ -74,33 +73,25 @@ titleTextStyle: TextStyle(
             ),
             SizedBox(height: 40.0),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center, // Changed to center
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
+                    Navigator.pushNamed(context, '/login');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 110, 194,
-                        111), // Change the color of the "Login" button
+                    backgroundColor: Color.fromARGB(255, 110, 194, 111),
                     foregroundColor: Colors.white,
                   ),
                   child: Text('Login'),
                 ),
-                SizedBox(width: 10), // Added spacing between buttons
+                SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignUpPage()),
-                    );
+                    Navigator.pushNamed(context, '/signup');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 110, 194,
-                        111), // Change the color of the "Login" button
+                    backgroundColor: Color.fromARGB(255, 110, 194, 111),
                     foregroundColor: Colors.white,
                   ),
                   child: Text('Sign Up'),

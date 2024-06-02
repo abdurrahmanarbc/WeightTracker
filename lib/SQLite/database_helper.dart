@@ -1,84 +1,121 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:weight_tracking/models/user.dart';
+
+const String fileName = 'weight_tracker.db';
+//This class provides access to a SQLite database
+//and performs basic database operations such as adding, updating, deleting, and querying users to this database.
 
 class DatabaseHelper {
-  static DatabaseHelper? _databaseHelper;
-  static final DatabaseHelper ins = DatabaseHelper._();
-  late Database _database;
-  DatabaseHelper._();
+  DatabaseHelper._init();
+  static final DatabaseHelper instance = DatabaseHelper._init();
+  static Database? _database;
 
-  String userTable = 'user_table';
+  String userTable = 'users';
   String colId = 'id';
   String colName = 'name';
   String colSurname = 'surname';
   String colEmail = 'email';
   String colPassword = 'password';
-  String colWeight = 'weight';
-  String colGoalWeight = 'goal_weight';
-  String colHeight = 'height';
 
-  DatabaseHelper._createInstance();
-
- static DatabaseHelper get instance {
+  /* static DatabaseHelper get instance {
     if (_databaseHelper == null) {
       _databaseHelper = DatabaseHelper._createInstance();
     }
     return _databaseHelper!;
-  }
+  } */
   Future<Database> get database async {
-    if (_database == null) {
-      _database = await initializeDatabase();
+    if (_database != null) {
+      try {
+        return _database!;
+      } catch (e) {
+        _database = await initializeDatabase(fileName);
+      }
     }
-    return _database;
+    return _database!;
   }
 
-  Future<Database> initializeDatabase() async {
-    String path = join(await getDatabasesPath(), 'weight_tracker.db');
-    var weightTrackerDatabase = await openDatabase(path, version: 1, onCreate: _createDb);
+  Future<Database> initializeDatabase(String fileName) async {
+    String path = join(await getDatabasesPath(), fileName);
+    var weightTrackerDatabase =
+        await openDatabase(path, version: 1, onCreate: _createDb);
     return weightTrackerDatabase;
   }
 
   void _createDb(Database db, int newVersion) async {
-    await db.execute(
-        'CREATE TABLE $userTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, '
+    await db.execute('CREATE TABLE $userTable('
+        '$colId INTEGER PRIMARY KEY AUTOINCREMENT, '
         '$colName TEXT NOT NULL, '
         '$colSurname TEXT NOT NULL, '
         '$colEmail TEXT NOT NULL, '
-        '$colPassword TEXT NOT NULL, '
-        '$colWeight REAL NOT NULL, '
-        '$colGoalWeight REAL, '
-        '$colHeight REAL NOT NULL)');
+        '$colPassword TEXT NOT NULL)');
   }
 
-  Future<int> insertUser(Map<String, dynamic> userData) async {
-  Database db = await this.database;
-  var result = await db.insert(userTable, userData);
-  return result;
-}
-
-
-  Future<List<Map<String, dynamic>>> getUser(String email, String password) async {
-    Database db = await this.database;
-    var result = await db.rawQuery('SELECT * FROM $userTable WHERE $colEmail = ? AND $colPassword = ?', [email, password]);
-    return result;
+  Future<void> insertUser(User user) async {
+    try {
+      final db = await database;
+      await db.insert(userTable, user.toJson());
+      print('Kullanıcı başarıyla eklendi');
+    } catch (e) {
+      print('Hata oluştu: $e');
+    }
   }
 
-  Future<int> updateUser(Map<String, dynamic> user) async {
-    var db = await this.database;
-    var result = await db.update(userTable, user, where: '$colId = ?', whereArgs: [user[colId]]);
-    return result;
+  Future<List<User?>> getAllUsers() async {
+    //Used to list all users
+    final db = await instance.database;
+    final result = await db.query(userTable);
+    return result.map((json) => User.fromJson(json)).toList();
   }
 
-  Future<int> deleteUser(int id) async {
-    var db = await this.database;
-    int result = await db.rawDelete('DELETE FROM $userTable WHERE $colId = $id');
-    return result;
+  Future<User?> getUser(String email, String password) async {
+    final db = await instance.database;
+    final result = await db.rawQuery(
+        'SELECT * FROM $userTable WHERE $colEmail = ? AND $colPassword = ?',
+        [email, password]);
+    if (result.isNotEmpty) {
+      return User.fromJson(
+          result.first); // İlk satırı alıp User nesnesine dönüştürüyoruz
+    } else {
+      return null; // Kullanıcı bulunamazsa null döndürüyoruz
+    }
+  }
+
+  Future<String> updateUser(User user) async {
+    try {
+      var db = await instance.database;
+      int result = await db.update(userTable, user.toJson(),
+          where: '$colId = ?', whereArgs: [user.id]);
+      if (result != 0) {
+        return 'User updated successfully';
+      } else {
+        return 'User update failed';
+      }
+    } catch (e) {
+      return 'Error updating user: $e';
+    }
+  }
+
+  Future<String> deleteUser(int id) async {
+    try {
+      var db = await instance.database;
+      int result =
+          await db.rawDelete('DELETE FROM $userTable WHERE $colId = ?', [id]);
+      if (result != 0) {
+        return 'User deleted successfully';
+      } else {
+        return 'User delete failed';
+      }
+    } catch (e) {
+      return 'Error deleting user: $e';
+    }
   }
 
   Future<int> getCount() async {
-    Database db = await this.database;
-    List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $userTable');
+    Database db = await database;
+    List<Map<String, dynamic>> x =
+        await db.rawQuery('SELECT COUNT (*) from $userTable');
     int result = Sqflite.firstIntValue(x)!;
     return result;
   }

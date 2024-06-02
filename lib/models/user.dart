@@ -1,25 +1,41 @@
 class User {
   int? id;
-  String? name;
-  String? surname;
-  String? email;
-  String? password;
-  double? weight;
-  double? goalWeight;
-  double? height;
+  String name;
+  String surname;
+  String email;
+  String password;
 
-  User({this.id, required this.name, required this.surname, required this.email, required this.password, required this.weight, this.goalWeight, required this.height});
+  User({
+    this.id,
+    required this.name,
+    required this.surname,
+    required this.email,
+    required this.password,
+  });
+
+  User copyWith({
+    int? id,
+    String? name,
+    String? surname,
+    String? email,
+    String? password,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      surname: surname ?? this.surname,
+      email: email ?? this.email,
+      password: password ?? this.password,
+    );
+  }
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      name: json['name'],
-      surname: json['surname'],
-      email: json['email'],
-      password: json['password'],
-      weight: json['weight'].toDouble(),
-      goalWeight: json['goal_weight'] != null ? json['goal_weight'].toDouble() : null,
-      height: json['height'].toDouble(),
+      id: json['id'] as int?,
+      name: json['name'] as String,
+      surname: json['surname'] as String,
+      email: json['email'] as String,
+      password: json['password'] as String,
     );
   }
 
@@ -29,14 +45,9 @@ class User {
       'surname': surname,
       'email': email,
       'password': password,
-      'weight': weight,
-      'height': height,
     };
     if (id != null) {
       data['id'] = id;
-    }
-    if (goalWeight != null) {
-      data['goal_weight'] = goalWeight;
     }
     return data;
   }

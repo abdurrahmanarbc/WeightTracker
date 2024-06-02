@@ -1,0 +1,18 @@
+{
+  "title": "Settings",
+  "@title": {
+    "description": "Title for the settings page"
+  },
+  "theme": "Change the app theme",
+  "@theme": {
+    "description": "Subtitle for the theme setting"
+  },
+  "notifications": "Enable or disable notifications",
+  "@notifications": {
+    "description": "Subtitle for the notifications setting"
+  },
+  "language": "Change the app language",
+  "@language": {
+    "description": "Subtitle for the language setting"
+  }
+}

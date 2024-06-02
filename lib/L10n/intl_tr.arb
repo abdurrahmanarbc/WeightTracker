@@ -1,0 +1,18 @@
+{
+  "title": "Ayarlar",
+  "@title": {
+    "description": "Ayarlar sayfasının başlığı"
+  },
+  "theme": "Uygulama temasını değiştirin",
+  "@theme": {
+    "description": "Tema ayarının alt başlığı"
+  },
+  "notifications": "Bildirimleri etkinleştirin veya devre dışı bırakın",
+  "@notifications": {
+    "description": "Bildirim ayarının alt başlığı"
+  },
+  "language": "Uygulama dilini değiştirin",
+  "@language": {
+    "description": "Dil ayarının alt başlığı"
+  }
+}
